@@ -14,13 +14,6 @@ body {
     background: #f6f7fb;
     color: #1f2937
 }
-
-.header {
-    padding: 18px 24px;
-    background: #0f172a;
-    color: #fff
-}
-
 .header h1 {
     margin: 0;
     font-size: 20px;
@@ -37,7 +30,7 @@ body {
     display: grid;
     grid-template-columns: 1fr 420px;
     gap: 16px;
-    height: calc(100vh - 86px)
+    height: 100vh;
 }
 
 .map-area {
@@ -95,7 +88,7 @@ section.viewer > div {
   border-radius: 8px;
   padding: 16px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  max-height: 50vh;
+
   overflow: auto;
   font-family: 'Fira Code', monospace;
   font-size: 0.95rem;

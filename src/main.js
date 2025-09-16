@@ -9,7 +9,7 @@ function randomColor(){
   return `hsl(${h} 70% 70% / 1)`
 }
 
-const map = L.map('map', { center: [46.8, 8.33], zoom: 7 })
+const map = L.map('map', { center: [46.8, 8.33], zoom: 9 })
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19,
