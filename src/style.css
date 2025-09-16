@@ -9,7 +9,7 @@ body,
 }
 
 body {
-    font-family: Inter, ui-sans-serif, system-ui, Helvetica, Arial;
+    font-family: "Cutive Mono", monospace;
     margin: 0;
     background: #f6f7fb;
     color: #1f2937
@@ -23,7 +23,8 @@ body {
 
 .header h1 {
     margin: 0;
-    font-size: 20px
+    font-size: 20px;
+    font-family: "Tiny5", sans-serif;
 }
 
 .header .subtitle {
@@ -36,15 +37,12 @@ body {
     display: grid;
     grid-template-columns: 1fr 420px;
     gap: 16px;
-    padding: 16px;
     height: calc(100vh - 86px)
 }
 
 .map-area {
     position: relative;
-    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(2, 6, 23, 0.08)
 }
 
 #map {
@@ -75,10 +73,6 @@ body {
 }
 
 .viewer {
-    background: #fff;
-    border-radius: 12px;
-    padding: 12px;
-    box-shadow: 0 4px 20px rgba(2, 6, 23, 0.06);
     display: flex;
     flex-direction: column
 }

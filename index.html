@@ -3,17 +3,19 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Map → Live GeoJSON</title>
+    <title>Käspus GeoJSON Thief</title>
     <link rel="stylesheet" href="/src/style.css">
     <!-- Leaflet CSS (imported from node_modules via vite import in main.js, but keep fallback link for clarity) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.pm@2.2.0/dist/leaflet.pm.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Tiny5&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cutive+Mono&family=Space+Grotesk:wght@300..700&family=Tiny5&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
+
   </head>
   <body>
-    <header class="header">
-      <h1>Map — Live GeoJSON</h1>
-      <p class="subtitle">Draw polygons / add markers, drag to edit, copy GeoJSON for CMS</p>
-    </header>
 
     <div class="container">
       <section class="map-area">
@@ -31,6 +33,10 @@
       </section>
 
       <section class="viewer">
+        <header class="header">
+        <h1>Käspus GeoJSON Thief</h1>
+        <p class="subtitle">Get that damn data for your CMS</p>
+        </header>
         <div id="geojson-container">
             <h2>Shapes Viewer</h2>
             <pre id="geojson-viewer"></pre>
