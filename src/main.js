@@ -297,19 +297,39 @@ btnDownload.addEventListener('click', ()=>{
 featuresLayer.on('layeradd', updateViewer)
 featuresLayer.on('layerremove', updateViewer)
 
-// helper flash
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    showFlash('Copied to clipboard');
+  }).catch(() => {
+    showFlash('Copy failed — select and copy manually');
+  });
+}
+
+// copy Shapes Viewer
+document.getElementById('copy-shapes-btn').addEventListener('click', () => {
+  const txt = document.getElementById('geojson-viewer').textContent;
+  copyToClipboard(txt);
+});
+
+// copy Marker Viewer
+document.getElementById('copy-markers-btn').addEventListener('click', () => {
+  const txt = document.getElementById('marker-viewer').textContent;
+  copyToClipboard(txt);
+});
+
+// flash helper
 function showFlash(msg){
-  const el = document.createElement('div')
-  el.textContent = msg
-  el.style.position = 'fixed'
-  el.style.bottom = '20px'
-  el.style.right = '20px'
-  el.style.padding = '10px 14px'
-  el.style.background = '#111827'
-  el.style.color = '#fff'
-  el.style.borderRadius = '8px'
-  document.body.appendChild(el)
-  setTimeout(()=>el.remove(),1600)
+  const el = document.createElement('div');
+  el.textContent = msg;
+  el.style.position = 'fixed';
+  el.style.bottom = '20px';
+  el.style.right = '20px';
+  el.style.padding = '10px 14px';
+  el.style.background = '#111827';
+  el.style.color = '#fff';
+  el.style.borderRadius = '8px';
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),1600);
 }
 
 // allow dragging polygon vertices to update coordinates — leaflet.pm triggers pm:edit

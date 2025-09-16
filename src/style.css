@@ -12,7 +12,10 @@ body {
     font-family: "Cutive Mono", monospace;
     margin: 0;
     background: #f6f7fb;
-    color: #1f2937
+    color: #1f2937;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 400;
 }
 .header h1 {
     margin: 0;
@@ -43,7 +46,20 @@ body {
     height: 100%;
     min-height: 420px
 }
-
+.codefieldHead {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+.codefieldHead button {
+    background: transparent;
+    border: none;
+    color: white;
+    &:hover {
+        cursor: pointer;
+        text-decoration: underline;
+    }
+}
 .toolbar {
     position: absolute;
     left: 12px;
@@ -71,7 +87,9 @@ body {
 }
 
 .viewer h2 {
-    margin: 0 0 8px 0
+    margin: 0 0 8px 0;
+    font-size: 25px;
+    font-family: "Tiny5", sans-serif;
 }
 
 section.viewer {
