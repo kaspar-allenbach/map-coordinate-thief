@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Map → Live GeoJSON</title>
+    <link rel="stylesheet" href="/src/style.css">
+    <!-- Leaflet CSS (imported from node_modules via vite import in main.js, but keep fallback link for clarity) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.pm@2.2.0/dist/leaflet.pm.css" />
+  </head>
+  <body>
+    <header class="header">
+      <h1>Map — Live GeoJSON</h1>
+      <p class="subtitle">Draw polygons / add markers, drag to edit, copy GeoJSON for CMS</p>
+    </header>
+
+    <div class="container">
+      <section class="map-area">
+        <div id="map"></div>
+        <div class="toolbar">
+          <button id="btn-draw-polygon">Draw Polygon</button>
+            <button id="btn-draw-polyline">Draw Line</button>
+            <button id="btn-add-marker">Add Marker</button>
+            <button id="btn-draw-circle">Draw Circle</button>
+            <button id="btn-clear-all">Clear All</button>
+            <button id="btn-download">Download GeoJSON</button>
+            <button id="btn-copy">Copy GeoJSON</button>
+
+        </div>
+      </section>
+
+      <section class="viewer">
+        <div id="geojson-container">
+            <h2>Shapes Viewer</h2>
+            <pre id="geojson-viewer"></pre>
+            </div>
+
+            <div id="marker-container">
+            <h2>Marker Viewer</h2>
+            <pre id="marker-viewer"></pre>
+        </div>
+      </section>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
