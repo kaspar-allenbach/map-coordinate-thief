@@ -38,7 +38,7 @@ const featuresLayer = L.featureGroup().addTo(map) // holds markers and polygons
 // maintain a map of leaflet layer id -> feature metadata
 const meta = new Map()
 
-function geojsonFromLayers(){
+function geojsonFromLayers() {
   const features = []
 
   featuresLayer.eachLayer(layer => {
@@ -47,13 +47,18 @@ function geojsonFromLayers(){
       // simple coordinates output for markers
       features.push([coords.lat, coords.lng])
     } else if (layer instanceof L.Circle) {
-      const coords = layer.getLatLng()
-      features.push({
-        type: 'Feature',
-        properties: { type: 'circle', radius: layer.getRadius() },
-        geometry: { type: 'Point', coordinates: [coords.lng, coords.lat] }
-      })
-    } else if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
+  const coords = layer.getLatLng()
+  geoFeatures.push({
+    type: 'Feature',
+    properties: Object.assign(
+      { type: 'circle', radius: layer.getRadius() },
+      meta.get(layer._leaflet_id) || {}
+    ),
+    geometry: { type: 'Point', coordinates: [coords.lng, coords.lat] }
+  })
+}
+
+ else if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
       const geo = layer.toGeoJSON().geometry
       features.push({
         type: 'Feature',
@@ -68,6 +73,7 @@ function geojsonFromLayers(){
 
   return features
 }
+
 function highlightJSON(json) {
   if (!json) return ''
   return JSON.stringify(json, null, 2)
@@ -88,40 +94,6 @@ function highlightJSON(json) {
 
 
 
-function updateViewer(){
-  const geojsonEl = document.getElementById('geojson-viewer')
-  const markerEl = document.getElementById('marker-viewer')
-
-  const geoFeatures = []
-  const markerCoords = []
-
-  featuresLayer.eachLayer(layer => {
-    if (layer instanceof L.Marker) {
-      const coords = layer.getLatLng()
-      markerCoords.push([coords.lat, coords.lng])
-    } else if (layer instanceof L.Circle) {
-      const coords = layer.getLatLng()
-      geoFeatures.push({
-        type: 'Feature',
-        properties: { type: 'circle', radius: layer.getRadius() },
-        geometry: { type: 'Point', coordinates: [coords.lng, coords.lat] }
-      })
-    } else if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
-      const geo = layer.toGeoJSON().geometry
-      geoFeatures.push({
-        type: 'Feature',
-        properties: Object.assign(
-          { type: layer instanceof L.Polygon ? 'polygon' : 'polyline' },
-          meta.get(layer._leaflet_id) || {}
-        ),
-        geometry: geo
-      })
-    }
-  })
-
-  geojsonEl.innerHTML = highlightJSON(geoFeatures)
-  markerEl.innerHTML = highlightJSON({ markers: markerCoords })
-}
 
 
 
@@ -211,6 +183,7 @@ function toggleButtonActive(btn, on){
 
 map.on('pm:create', e => {
   const layer = e.layer
+  const color = randomColor()  // assign a color for polygons & circles
 
   if (layer instanceof L.Marker) {
     featuresLayer.addLayer(layer)
@@ -222,9 +195,7 @@ map.on('pm:create', e => {
   }
 
   if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
-    const color = randomColor()
     layer.setStyle({ color, weight: 3, opacity: 0.9 })
-
     featuresLayer.addLayer(layer)
     meta.set(layer._leaflet_id, { color })
     layer.pm.enable({ allowSelfIntersection: false })
@@ -237,14 +208,21 @@ map.on('pm:create', e => {
   }
 
   if (layer instanceof L.Circle) {
+    layer.setStyle({ color, weight: 3, opacity: 0.9 }) // set color for circle outline
     featuresLayer.addLayer(layer)
+    meta.set(layer._leaflet_id, { color }) // store color in meta
+
     layer.pm.enable()
     layer.on('pm:edit', updateViewer)
-    layer.on('pm:remove', updateViewer)
+    layer.on('pm:remove', () => {
+      meta.delete(layer._leaflet_id)
+      updateViewer()
+    })
   }
 
   updateViewer()
 })
+
 
 
 
@@ -285,6 +263,26 @@ btnCopy.addEventListener('click', async ()=>{
   }
 })
 
+// Clear Shapes Viewer + map
+document.getElementById('clear-shapes-btn').addEventListener('click', () => {
+  featuresLayer.clearLayers();  // remove all layers from map
+  meta.clear();                 // clear metadata
+  document.getElementById('geojson-viewer').textContent = '';  // clear shapes viewer
+  document.getElementById('marker-viewer').textContent = '';   // clear marker viewer
+  updateViewer();               // update viewers (optional, ensures internal state is synced)
+});
+
+// Clear Marker Viewer + map
+document.getElementById('clear-markers-btn').addEventListener('click', () => {
+  featuresLayer.clearLayers();  // remove all layers from map
+  meta.clear();                 // clear metadata
+  document.getElementById('geojson-viewer').textContent = '';  // clear shapes viewer
+  document.getElementById('marker-viewer').textContent = '';   // clear marker viewer
+  updateViewer();               // update viewers
+});
+
+
+
 btnDownload.addEventListener('click', ()=>{
   const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(document.getElementById('geojson-viewer').textContent)
   const a = document.createElement('a')
@@ -304,6 +302,46 @@ function copyToClipboard(text) {
     showFlash('Copy failed — select and copy manually');
   });
 }
+
+function updateViewer(){
+  const geojsonEl = document.getElementById('geojson-viewer')
+  const markerEl = document.getElementById('marker-viewer')
+
+  const geoFeatures = []
+  const markerCoords = []
+
+  featuresLayer.eachLayer(layer => {
+    if (layer instanceof L.Marker) {
+      const coords = layer.getLatLng()
+      markerCoords.push([coords.lat, coords.lng])
+    } else if (layer instanceof L.Circle) {
+  const coords = layer.getLatLng()
+  geoFeatures.push({
+    type: 'Feature',
+    properties: Object.assign(
+      { type: 'circle', radius: layer.getRadius() },
+      meta.get(layer._leaflet_id) || {}
+    ),
+    geometry: { type: 'Point', coordinates: [coords.lng, coords.lat] }
+  })
+}
+ else if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
+      const geo = layer.toGeoJSON().geometry
+      geoFeatures.push({
+        type: 'Feature',
+        properties: Object.assign(
+          { type: layer instanceof L.Polygon ? 'polygon' : 'polyline' },
+          meta.get(layer._leaflet_id) || {}
+        ),
+        geometry: geo
+      })
+    }
+  })
+
+  geojsonEl.innerHTML = highlightJSON(geoFeatures)
+  markerEl.innerHTML = highlightJSON({ markers: markerCoords })
+}
+
 
 // copy Shapes Viewer
 document.getElementById('copy-shapes-btn').addEventListener('click', () => {
