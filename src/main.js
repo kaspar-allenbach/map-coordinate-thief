@@ -4,8 +4,8 @@ import 'leaflet.pm/dist/leaflet.pm.css'
 import 'leaflet.pm'
 
 // helper: random pastel color
-function randomColor(){
-  const h = Math.floor(Math.random()*360)
+function randomColor() {
+  const h = Math.floor(Math.random() * 360)
   return `hsl(${h} 70% 70% / 1)`
 }
 
@@ -47,18 +47,18 @@ function geojsonFromLayers() {
       // simple coordinates output for markers
       features.push([coords.lat, coords.lng])
     } else if (layer instanceof L.Circle) {
-  const coords = layer.getLatLng()
-  geoFeatures.push({
-    type: 'Feature',
-    properties: Object.assign(
-      { type: 'circle', radius: layer.getRadius() },
-      meta.get(layer._leaflet_id) || {}
-    ),
-    geometry: { type: 'Point', coordinates: [coords.lng, coords.lat] }
-  })
-}
+      const coords = layer.getLatLng()
+      geoFeatures.push({
+        type: 'Feature',
+        properties: Object.assign(
+          { type: 'circle', radius: layer.getRadius() },
+          meta.get(layer._leaflet_id) || {}
+        ),
+        geometry: { type: 'Point', coordinates: [coords.lng, coords.lat] }
+      })
+    }
 
- else if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
+    else if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
       const geo = layer.toGeoJSON().geometry
       features.push({
         type: 'Feature',
@@ -112,12 +112,12 @@ const btnDownload = document.getElementById('btn-download')
 const btnDrawPolyline = document.getElementById('btn-draw-polyline')
 const btnDrawCircle = document.getElementById('btn-draw-circle')
 
-btnDrawPolygon.addEventListener('click', ()=>{
+btnDrawPolygon.addEventListener('click', () => {
   drawingPolygon = !drawingPolygon
   addingMarker = false
   toggleButtonActive(btnDrawPolygon, drawingPolygon)
   toggleButtonActive(btnAddMarker, false)
-  if (drawingPolygon){
+  if (drawingPolygon) {
     map.pm.enableDraw('Polygon', { snappable: true, allowSelfIntersection: false })
   } else {
     map.pm.disableDraw('Polygon')
@@ -153,7 +153,7 @@ btnDrawCircle.addEventListener('click', () => {
 })
 
 
-btnAddMarker.addEventListener('click', ()=>{
+btnAddMarker.addEventListener('click', () => {
   addingMarker = !addingMarker
   drawingPolygon = false
   toggleButtonActive(btnAddMarker, addingMarker)
@@ -176,20 +176,23 @@ btnDrawPolyline.addEventListener('click', () => {
 })
 
 
-function toggleButtonActive(btn, on){
+function toggleButtonActive(btn, on) {
   if (on) btn.style.background = '#eef2ff'
   else btn.style.background = '#fff'
 }
 
 map.on('pm:create', e => {
   const layer = e.layer
-  const color = randomColor()  // assign a color for polygons & circles
+  const color = randomColor()  // assign a color for polygons, circles, and now markers
 
   if (layer instanceof L.Marker) {
     featuresLayer.addLayer(layer)
+    meta.set(layer._leaflet_id, { color }) // store color in meta
+
     layer.on('dragend', updateViewer)
     layer.on('dblclick', () => {
       featuresLayer.removeLayer(layer)
+      meta.delete(layer._leaflet_id) // remove color when deleted
       updateViewer()
     })
   }
@@ -208,9 +211,9 @@ map.on('pm:create', e => {
   }
 
   if (layer instanceof L.Circle) {
-    layer.setStyle({ color, weight: 3, opacity: 0.9 }) // set color for circle outline
+    layer.setStyle({ color, weight: 3, opacity: 0.9 })
     featuresLayer.addLayer(layer)
-    meta.set(layer._leaflet_id, { color }) // store color in meta
+    meta.set(layer._leaflet_id, { color })
 
     layer.pm.enable()
     layer.on('pm:edit', updateViewer)
@@ -226,19 +229,22 @@ map.on('pm:create', e => {
 
 
 
+
 map.on('click', e => {
   if (!addingMarker) return
 
   const coords = e.latlng
   const marker = L.marker(coords, { draggable: true })
-  featuresLayer.addLayer(marker)   // <- ensures it’s in the layer group
 
-  // update marker viewer on drag
+  const color = randomColor()
+  meta.set(marker._leaflet_id, { color })
+
+  featuresLayer.addLayer(marker)
+
   marker.on('dragend', updateViewer)
-
-  // double-click to remove
   marker.on('dblclick', () => {
     featuresLayer.removeLayer(marker)
+    meta.delete(marker._leaflet_id)
     updateViewer()
   })
 
@@ -246,19 +252,19 @@ map.on('click', e => {
 })
 
 
-btnClearAll.addEventListener('click', ()=>{
+btnClearAll.addEventListener('click', () => {
   featuresLayer.clearLayers()
   meta.clear()
   updateViewer()
 })
 
 // copy to clipboard
-btnCopy.addEventListener('click', async ()=>{
+btnCopy.addEventListener('click', async () => {
   const txt = document.getElementById('geojson-viewer').textContent
-  try{
+  try {
     await navigator.clipboard.writeText(txt)
     showFlash('Copied to clipboard')
-  }catch(e){
+  } catch (e) {
     showFlash('Copy failed — select and copy manually')
   }
 })
@@ -283,7 +289,7 @@ document.getElementById('clear-markers-btn').addEventListener('click', () => {
 
 
 
-btnDownload.addEventListener('click', ()=>{
+btnDownload.addEventListener('click', () => {
   const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(document.getElementById('geojson-viewer').textContent)
   const a = document.createElement('a')
   a.href = dataStr
@@ -303,29 +309,35 @@ function copyToClipboard(text) {
   });
 }
 
-function updateViewer(){
+function updateViewer() {
   const geojsonEl = document.getElementById('geojson-viewer')
   const markerEl = document.getElementById('marker-viewer')
 
   const geoFeatures = []
-  const markerCoords = []
+  const markerFeatures = []
 
   featuresLayer.eachLayer(layer => {
     if (layer instanceof L.Marker) {
       const coords = layer.getLatLng()
-      markerCoords.push([coords.lat, coords.lng])
+      markerFeatures.push({
+        type: 'Feature',
+        properties: Object.assign(
+          { type: 'marker' },
+          meta.get(layer._leaflet_id) || {}
+        ),
+        geometry: { type: 'Point', coordinates: [coords.lng, coords.lat] }
+      })
     } else if (layer instanceof L.Circle) {
-  const coords = layer.getLatLng()
-  geoFeatures.push({
-    type: 'Feature',
-    properties: Object.assign(
-      { type: 'circle', radius: layer.getRadius() },
-      meta.get(layer._leaflet_id) || {}
-    ),
-    geometry: { type: 'Point', coordinates: [coords.lng, coords.lat] }
-  })
-}
- else if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
+      const coords = layer.getLatLng()
+      geoFeatures.push({
+        type: 'Feature',
+        properties: Object.assign(
+          { type: 'circle', radius: layer.getRadius() },
+          meta.get(layer._leaflet_id) || {}
+        ),
+        geometry: { type: 'Point', coordinates: [coords.lng, coords.lat] }
+      })
+    } else if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
       const geo = layer.toGeoJSON().geometry
       geoFeatures.push({
         type: 'Feature',
@@ -339,9 +351,8 @@ function updateViewer(){
   })
 
   geojsonEl.innerHTML = highlightJSON(geoFeatures)
-  markerEl.innerHTML = highlightJSON({ markers: markerCoords })
+  markerEl.innerHTML = highlightJSON({ markers: markerFeatures })
 }
-
 
 // copy Shapes Viewer
 document.getElementById('copy-shapes-btn').addEventListener('click', () => {
@@ -356,7 +367,7 @@ document.getElementById('copy-markers-btn').addEventListener('click', () => {
 });
 
 // flash helper
-function showFlash(msg){
+function showFlash(msg) {
   const el = document.createElement('div');
   el.textContent = msg;
   el.style.position = 'fixed';
@@ -367,7 +378,7 @@ function showFlash(msg){
   el.style.color = '#fff';
   el.style.borderRadius = '8px';
   document.body.appendChild(el);
-  setTimeout(()=>el.remove(),1600);
+  setTimeout(() => el.remove(), 1600);
 }
 
 // allow dragging polygon vertices to update coordinates — leaflet.pm triggers pm:edit
@@ -380,14 +391,14 @@ map.on('pm:globaleditmodetoggled', updateViewer)
 updateViewer()
 
 // make sure map invalidates size on load
-setTimeout(()=>map.invalidateSize(),300)
+setTimeout(() => map.invalidateSize(), 300)
 
 // keyboard shortcuts
-window.addEventListener('keydown',(e)=>{
-  if (e.key === 'Escape'){
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
     addingMarker = false
     drawingPolygon = false
-    toggleButtonActive(btnAddMarker,false); toggleButtonActive(btnDrawPolygon,false)
+    toggleButtonActive(btnAddMarker, false); toggleButtonActive(btnDrawPolygon, false)
     map.pm.disableDraw('Polygon')
   }
 })
