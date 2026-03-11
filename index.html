@@ -38,6 +38,23 @@
         <p class="subtitle">Get that damn data for your CMS</p>
         </header>
         <div id="geojson-container">
+
+            <div id="map-center-container">
+              <div class="codefieldHead">
+              <h2>Current Coordinates</h2>
+            </div>
+            <div class="center-display">
+              <div class="center-field">
+                <label>Latitude:</label>
+                <input type="text" id="center-lat" readonly>
+              </div>
+              <div class="center-field">
+                <label>Longitude:</label>
+                <input type="text" id="center-lon" readonly>
+              </div>
+            </div>
+        </div>
+
             <div class="codefieldHead">
               <h2>Shapes Viewer</h2>
               <button id="copy-shapes-btn">Copy</button>
@@ -46,7 +63,6 @@
             
             <pre id="geojson-viewer"></pre>
             </div>
-
             <div id="marker-container">
               <div class="codefieldHead">
                 <h2>Marker Viewer</h2>

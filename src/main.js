@@ -30,7 +30,19 @@ map.pm.addControls({
   removalMode: true,
 })
 
+// Update map center display
+function updateMapCenter() {
+  const center = map.getCenter()
+  document.getElementById('center-lat').value = center.lat.toFixed(6)
+  document.getElementById('center-lon').value = center.lng.toFixed(6)
+}
 
+// Update on map move/zoom
+map.on('move', updateMapCenter)
+map.on('zoom', updateMapCenter)
+
+// Initial update
+updateMapCenter()
 
 
 const featuresLayer = L.featureGroup().addTo(map) // holds markers and polygons
