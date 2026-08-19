@@ -9,6 +9,19 @@ function randomColor() {
   return `hsl(${h} 70% 70% / 1)`
 }
 
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
+import markerIcon from 'leaflet/dist/images/marker-icon.png'
+import markerShadow from 'leaflet/dist/images/marker-shadow.png'
+
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow
+});
+
+
 const map = L.map('map', { center: [46.8, 8.33], zoom: 9 })
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -31,10 +44,14 @@ map.pm.addControls({
 })
 
 // Update map center display
+// Update map center display
 function updateMapCenter() {
   const center = map.getCenter()
   document.getElementById('center-lat').value = center.lat.toFixed(6)
   document.getElementById('center-lon').value = center.lng.toFixed(6)
+  
+  // Add this line to update the zoom input
+  document.getElementById('zoom').value = map.getZoom()
 }
 
 // Update on map move/zoom

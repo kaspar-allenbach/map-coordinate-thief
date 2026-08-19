@@ -62,19 +62,19 @@ body {
 }
 /* Map Center Display */
 #map-center-container {
-  flex: 1 1 45%;
+  flex: 0 0 auto;
   background: #1e1e2f;
   color: #d4d4d4;
   border-radius: 8px;
-  padding: 16px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  padding-bottom: 20px;
+  height: fit-content; 
 }
 
 #map-center-container h2 {
   margin-top: 0;
   font-size: 1.1rem;
   color: #9cdcfe;
-  border-bottom: 1px solid #333;
   padding-bottom: 4px;
   margin-bottom: 12px;
 }
@@ -99,10 +99,11 @@ body {
 .center-field input {
   background: #252535;
   border: 1px solid #444;
-  color: #ce9178;
+  color: #fcd3c2;
   padding: 8px;
   border-radius: 4px;
   font-family: 'Cutive Mono', monospace;
+  font-weight: bold;
   font-size: 0.95rem;
 }
 .toolbar {
@@ -141,7 +142,6 @@ section.viewer {
   display: flex;
   gap: 20px;
   padding: 20px;
-  flex-wrap: wrap;
 }
 
 section.viewer > div {
