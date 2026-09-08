@@ -13,7 +13,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Tiny5&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cutive+Mono&family=Space+Grotesk:wght@300..700&family=Tiny5&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
-
   </head>
   <body>
 
@@ -22,57 +21,57 @@
         <div id="map"></div>
         <div class="toolbar">
           <button id="btn-draw-polygon">Draw Polygon</button>
-            <button id="btn-draw-polyline">Draw Line</button>
-            <button id="btn-add-marker">Add Marker</button>
-            <button id="btn-draw-circle">Draw Circle</button>
-            <button id="btn-clear-all">Clear All</button>
-            <button id="btn-download">Download GeoJSON</button>
-            <button id="btn-copy">Copy GeoJSON</button>
-
+          <button id="btn-draw-polyline">Draw Linex</button>
+          <button id="btn-draw-circle">Draw Circle</button>
+          <button id="btn-add-marker">Add Marker</button>
+          <button id="btn-clear-all">Clear All</button>
+          <button id="btn-download">Download GeoJSON</button>
+          <button id="btn-copy">Copy GeoJSON</button>
         </div>
       </section>
 
       <section class="viewer">
         <header class="header">
-        <h1>Käspus GeoJSON Thief</h1>
-        <p class="subtitle">Get that damn data for your CMS</p>
+          <h1>Käspus GeoJSON Thief</h1>
+          <p class="subtitle">Get that damn data for your CMS</p>
         </header>
-        <div id="map-center-container">
-                <div class="codefieldHead">
-                <h2>Current Coordinates</h2>
-              </div>
-              <div class="center-display">
-                <div class="center-field">
-                  <label>Latitude:</label>
-                  <input type="text" id="center-lat" readonly>
-                </div>
-                <div class="center-field">
-                  <label>Longitude:</label>
-                  <input type="text" id="center-lon" readonly>
-                </div>
-                <div class="center-field">
-                  <label>Zoom:</label>
-                  <input type="text" id="zoom" readonly>
-                </div>
-              </div>
-        </div>
-        <div id="geojson-container">
 
-            <div class="codefieldHead">
-              <h2>Shapes Viewer</h2>
-              <button id="copy-shapes-btn">Copy</button>
-              <button id="clear-shapes-btn">Clear</button>
+        <div id="map-center-container">
+          <div class="codefieldHead">
+            <h2>Current Coordinates</h2>
+          </div>
+          <div class="center-display">
+            <div class="center-field">
+              <label>Latitude:</label>
+              <input type="text" id="center-lat" readonly>
             </div>
-            
-            <pre id="geojson-viewer"></pre>
+            <div class="center-field">
+              <label>Longitude:</label>
+              <input type="text" id="center-lon" readonly>
             </div>
-            <div id="marker-container">
-              <div class="codefieldHead">
-                <h2>Marker Viewer</h2>
-                <button id="copy-markers-btn">Copy</button>
-                <button id="clear-markers-btn">Clear</button>
-              </div>
-            <pre id="marker-viewer"></pre>
+            <div class="center-field">
+              <label>Zoom:</label>
+              <input type="text" id="zoom" readonly>
+            </div>
+          </div>
+        </div>
+
+        <div id="geojson-container">
+          <div class="codefieldHead">
+            <h2>Shapes Viewer</h2>
+            <button id="copy-shapes-btn">Copy</button>
+            <button id="clear-shapes-btn">Clear</button>
+          </div>
+          <pre id="geojson-viewer"></pre>
+        </div>
+
+        <div id="marker-container">
+          <div class="codefieldHead">
+            <h2>Marker Viewer</h2>
+            <button id="copy-markers-btn">Copy</button>
+            <button id="clear-markers-btn">Clear</button>
+          </div>
+          <pre id="marker-viewer"></pre>
         </div>
       </section>
     </div>

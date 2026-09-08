@@ -34,7 +34,7 @@ map.pm.addControls({
   position: 'topleft',
   drawMarker: true,        // keep enabled
   drawPolygon: true,       // keep enabled
-  drawPolyline: false,      // keep enabled
+  drawPolyline: true,     // keep enabled (hiding default button in favor of custom UI)
   drawCircle: true,        // keep enabled
   drawCircleMarker: false, // explicitly disable CircleMarker
   editMode: true,
@@ -43,7 +43,6 @@ map.pm.addControls({
   removalMode: true,
 })
 
-// Update map center display
 // Update map center display
 function updateMapCenter() {
   const center = map.getCenter()
@@ -121,14 +120,6 @@ function highlightJSON(json) {
       })
 }
 
-
-
-
-
-
-
-
-
 // create marker via clicking on map when 'add marker' mode enabled
 let addingMarker = false
 let drawingPolygon = false
@@ -153,17 +144,19 @@ btnDrawPolygon.addEventListener('click', () => {
   }
 })
 
+// FIXED: Leaflet.pm uses 'Line' instead of 'Polyline' for draw modes
 btnDrawPolyline.addEventListener('click', () => {
+  drawingPolygon = false
   addingMarker = false
   toggleButtonActive(btnAddMarker, false)
   toggleButtonActive(btnDrawPolygon, false)
   toggleButtonActive(btnDrawCircle, false)
 
-  toggleButtonActive(btnDrawPolyline, !map.pm.Draw.Polyline.enabled())
-  if (map.pm.Draw.Polyline.enabled()) {
-    map.pm.disableDraw('Polyline')
+  toggleButtonActive(btnDrawPolyline, !map.pm.Draw.Line.enabled())
+  if (map.pm.Draw.Line.enabled()) {
+    map.pm.disableDraw('Line')
   } else {
-    map.pm.enableDraw('Polyline', { snappable: true })
+    map.pm.enableDraw('Line', { snappable: true })
   }
 })
 
@@ -181,7 +174,6 @@ btnDrawCircle.addEventListener('click', () => {
   }
 })
 
-
 btnAddMarker.addEventListener('click', () => {
   addingMarker = !addingMarker
   drawingPolygon = false
@@ -190,20 +182,7 @@ btnAddMarker.addEventListener('click', () => {
   map.pm.disableDraw('Polygon')
 })
 
-btnDrawPolyline.addEventListener('click', () => {
-  drawingPolygon = false
-  addingMarker = false
-  toggleButtonActive(btnDrawPolygon, false)
-  toggleButtonActive(btnAddMarker, false)
-  toggleButtonActive(btnDrawPolyline, !map.pm.Draw.Polyline.enabled())
-
-  if (map.pm.Draw.Polyline.enabled()) {
-    map.pm.disableDraw('Polyline')
-  } else {
-    map.pm.enableDraw('Polyline', { snappable: true })
-  }
-})
-
+// NOTE: Removed your second duplicate btnDrawPolyline event listener here.
 
 function toggleButtonActive(btn, on) {
   if (on) btn.style.background = '#eef2ff'
@@ -226,6 +205,7 @@ map.on('pm:create', e => {
     })
   }
 
+  // Works for both Polygons and Polylines
   if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
     layer.setStyle({ color, weight: 3, opacity: 0.9 })
     featuresLayer.addLayer(layer)
@@ -255,10 +235,6 @@ map.on('pm:create', e => {
   updateViewer()
 })
 
-
-
-
-
 map.on('click', e => {
   if (!addingMarker) return
 
@@ -279,7 +255,6 @@ map.on('click', e => {
 
   updateViewer()
 })
-
 
 btnClearAll.addEventListener('click', () => {
   featuresLayer.clearLayers()
@@ -315,8 +290,6 @@ document.getElementById('clear-markers-btn').addEventListener('click', () => {
   document.getElementById('marker-viewer').textContent = '';   // clear marker viewer
   updateViewer();               // update viewers
 });
-
-
 
 btnDownload.addEventListener('click', () => {
   const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(document.getElementById('geojson-viewer').textContent)
@@ -367,6 +340,7 @@ function updateViewer() {
         geometry: { type: 'Point', coordinates: [coords.lng, coords.lat] }
       })
     } else if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
+      // Leaflet converts Polyline to a LineString GeoJSON geometry natively here
       const geo = layer.toGeoJSON().geometry
       geoFeatures.push({
         type: 'Feature',
@@ -427,11 +401,8 @@ window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     addingMarker = false
     drawingPolygon = false
-    toggleButtonActive(btnAddMarker, false); toggleButtonActive(btnDrawPolygon, false)
+    toggleButtonActive(btnAddMarker, false); toggleButtonActive(btnDrawPolygon, false); toggleButtonActive(btnDrawPolyline, false)
     map.pm.disableDraw('Polygon')
+    map.pm.disableDraw('Line') // Disable lines too
   }
 })
-
-// ensure all coordinates are in WGS84: Leaflet uses WGS84 (EPSG:4326) for lat/lng; map projection is WebMercator for tiles — coordinates output are in WGS84 when using toGeoJSON and getLatLng
-
-// End of main.js
